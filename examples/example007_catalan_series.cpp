@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020.                        //
+//  Copyright Christopher Kormanyos 2020 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -8,6 +8,7 @@
 #include <cstdint>
 
 #include <math/wide_decimal/decwide_t.h>
+#include <math/wide_decimal/decwide_t_examples.h>
 
 namespace
 {
@@ -46,7 +47,7 @@ namespace local
 
     for(std::uint_fast32_t k = UINT32_C(2); k < UINT32_C(10000000); ++k)
     {
-      const std::uint32_t tk = 2U * k;
+      const std::uint32_t tk = (std::uint32_t) (2U * k);
       const std::uint64_t tk_plus_one_squared = (std::uint64_t) (tk + 1U) * (tk + 1U);
 
       k_fact  *= k;

@@ -11,6 +11,7 @@
 #include <numeric>
 
 #include <math/wide_decimal/decwide_t.h>
+#include <math/wide_decimal/decwide_t_examples.h>
 
 namespace local
 {
@@ -143,7 +144,7 @@ namespace local
       std::copy(A.cbegin() + 1U, A.cend(), A.begin());
       std::copy(B.cbegin() + 1U, B.cend(), B.begin());
 
-      CT1 += UINT16_C(2);
+      CT1 = std::uint_fast16_t(CT1 + UINT16_C(2));
     }
 
     // Return the rational approximation. This is given

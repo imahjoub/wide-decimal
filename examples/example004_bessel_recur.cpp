@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020.                        //
+//  Copyright Christopher Kormanyos 2020 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -10,6 +10,7 @@
 #include <cstdint>
 
 #include <math/wide_decimal/decwide_t.h>
+#include <math/wide_decimal/decwide_t_examples.h>
 
 namespace
 {
@@ -127,7 +128,7 @@ namespace
     static std::uint32_t mstart1(const float x, const std::uint32_t digits)
     {
       m_z = (std::max)(x, 0.1F);
-      m_p = digits;
+      m_p = (std::int32_t) digits;
 
       // Get the starting order for recursion.
       const float         f_order = bisect(fn_mstart1, 0.1F, x + 100000.0F);
@@ -141,7 +142,7 @@ namespace
     {
       m_z = (std::max)(x, 0.1F);
       m_n = dn;
-      m_p = digits;
+      m_p = (std::int32_t) digits;
 
       // Get the starting order for recursion.
       const float         f_order = bisect(fn_mstart2, 0.1F, x + 100000.0F);
@@ -177,8 +178,8 @@ namespace local
     const std::uint32_t d10 = static_cast<std::uint32_t>(std::numeric_limits<floating_point_type>::digits10);
 
     // Get the starting order for recursive calculations.
-    const std::int32_t n_start1 = Jn_algo::mstart1((float) x,                  d10);
-    const std::int32_t n_start2 = Jn_algo::mstart2((float) x, (float) (n - 1), d10);
+    const std::int32_t n_start1 = (std::int32_t) Jn_algo::mstart1((float) x,                  d10);
+    const std::int32_t n_start2 = (std::int32_t) Jn_algo::mstart2((float) x, (float) (n - 1), d10);
 
     const std::int32_t n_start = (std::max)(n_start2, n_start1);
 
@@ -216,18 +217,17 @@ namespace local
 
 bool math::wide_decimal::example004_bessel_recur()
 {
-  // Calculate 1,001 decimal digits of the value
-  // of BesselJ[11, 123456 / 10000].
+  // Calculate 1,001 decimal digits of the value of a cylindrical Bessel function.
+  // N[BesselJ[9, 123456789/10000000], 1001]
 
-  using dec1001_t = math::wide_decimal::decwide_t<1001U>;
+  using dec1001_t = math::wide_decimal::decwide_t<1001U, std::uint32_t, void>;
 
   // Downward recursion and simultaneous summation of
   // the normalization factor.
   const dec1001_t x(dec1001_t(123456789UL) / 10000000UL);
 
-  const dec1001_t j11 = local::cyl_bessel_j(9, x);
+  const dec1001_t j9 = local::cyl_bessel_j(9, x);
 
-  // N[BesselJ[9, 123456789/10000000], 1001]
   const dec1001_t control
   {
     "0."
@@ -244,7 +244,7 @@ bool math::wide_decimal::example004_bessel_recur()
     "5"
   };
 
-  const dec1001_t closeness = fabs(1 - (j11 / control));
+  const dec1001_t closeness = fabs(1 - (j9 / control));
 
   const bool result_is_ok = closeness < (std::numeric_limits<dec1001_t>::epsilon() * 100);
 

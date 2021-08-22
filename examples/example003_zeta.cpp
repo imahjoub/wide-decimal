@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020.                        //
+//  Copyright Christopher Kormanyos 2020 - 2021.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -10,6 +10,7 @@
 #include <deque>
 
 #include <math/wide_decimal/decwide_t.h>
+#include <math/wide_decimal/decwide_t_examples.h>
 
 namespace
 {
@@ -20,7 +21,7 @@ namespace
     // It uses rudimentary (and slow) trial division with denominator
     // ranging from 3 up to the square root of the largest expected prime.
 
-    for(std::uint_fast16_t i = UINT32_C(3); i <= maximum_value; i += UINT32_C(2))
+    for(std::uint_fast16_t i = UINT16_C(3); i <= maximum_value; i = std::uint_fast16_t(i + UINT16_C(2)))
     {
       const std::uint_fast16_t maximum_square_root_value = static_cast<std::uint_fast16_t>(std::sqrt(static_cast<float>(i)) + 0.1F);
 
@@ -81,7 +82,7 @@ bool math::wide_decimal::example003_zeta()
   // Get 1000 primes.
   compute_primes_via_square_root(primes, UINT32_C(7920));
 
-  using dec51_t = math::wide_decimal::decwide_t<51>;
+  using dec51_t = math::wide_decimal::decwide_t<51U>;
 
   // Compute zeta(16).
   const dec51_t r16 = zeta16<dec51_t>(primes);
