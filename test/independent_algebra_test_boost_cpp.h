@@ -12,17 +12,21 @@
   #include <iomanip>
   #include <sstream>
 
+  #include <boost/version.hpp>
+
   #include <math/wide_decimal/decwide_t.h>
   #include <test/independent_algebra_test_base.h>
 
   #if (BOOST_VERSION <= 107500)
   #include <boost/serialization/nvp.hpp>
   #endif
+
   #if defined(DECWIDE_T_TEST_OPTION_TEST_CPP_DEC_FLOAT)
   #include <boost/multiprecision/cpp_dec_float.hpp>
   #else
   #include <boost/multiprecision/cpp_bin_float.hpp>
   #endif
+
   #include <boost/math/constants/constants.hpp>
 
   namespace test { namespace independent_algebra {

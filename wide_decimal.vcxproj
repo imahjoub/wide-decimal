@@ -72,28 +72,28 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='wide-decimal-debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir);C:\boost\boost_1_75_0;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);C:\boost\boost_1_76_0;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\</OutDir>
     <IntDir>$(OutDir)</IntDir>
     <TargetName>$(Configuration)-$(PlatformTarget)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='wide-decimal-release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir);C:\boost\boost_1_75_0;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);C:\boost\boost_1_76_0;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\</OutDir>
     <IntDir>$(OutDir)</IntDir>
     <TargetName>$(Configuration)-$(PlatformTarget)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='wide-decimal-debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SolutionDir);C:\boost\boost_1_75_0;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);C:\boost\boost_1_76_0;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\</OutDir>
     <IntDir>$(OutDir)</IntDir>
     <TargetName>$(Configuration)-$(PlatformTarget)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='wide-decimal-release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SolutionDir);C:\boost\boost_1_75_0;$(VC_IncludePath);$(WindowsSDK_IncludePath)</IncludePath>
+    <IncludePath>$(SolutionDir);C:\boost\boost_1_76_0;$(IncludePath)</IncludePath>
     <OutDir>$(SolutionDir)$(Configuration)-$(PlatformTarget)\</OutDir>
     <IntDir>$(OutDir)</IntDir>
     <TargetName>$(Configuration)-$(PlatformTarget)</TargetName>
@@ -106,6 +106,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -122,6 +123,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,6 +140,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +157,7 @@
       <ConformanceMode>false</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc11</LanguageStandard_C>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -182,6 +186,7 @@
     <ClCompile Include="examples\example007_catalan_series.cpp" />
     <ClCompile Include="examples\example008_bernoulli_tgamma.cpp" />
     <ClCompile Include="examples\example009a_boost_math_standalone.cpp" />
+    <ClCompile Include="examples\example009b_boost_math_standalone.cpp" />
     <ClCompile Include="examples\example009_boost_math_standalone.cpp" />
     <ClCompile Include="examples\example010a_hypergeometric_1f1.cpp" />
     <ClCompile Include="examples\example010_hypergeometric_2f1.cpp" />

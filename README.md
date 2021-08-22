@@ -40,7 +40,7 @@ value of `d` to the console.
 
 In particular,
 
-```
+```C
 #include <iomanip>
 #include <iostream>
 
@@ -62,6 +62,18 @@ The first template parameter `101U` sets the decimal digit
 count while the second optional template parameter `std::uint32_t`
 sets the internal _limb_ _type_. If the second template parameter is left blank,
 the default limb type is 32 bits in width and unsigned.
+
+The template signature of the `decwide_t` class is shown below.
+
+```C
+template<const std::int32_t MyDigits10,
+         typename LimbType = std::uint32_t,
+         typename AllocatorType = std::allocator<void>,
+         typename InternalFloatType = double,
+         typename ExponentType = std::int64_t,
+         typename FftFloatType = double>
+  class decwide_t;
+```
 
 `decwide_t` also has a third (and a few more) optional template paramter(s).
 The third template parameter
@@ -101,6 +113,7 @@ how to use wide-decimal.
   - ![`example008_bernoulli_tgamma.cpp`](./examples/example008_bernoulli_tgamma.cpp) implements `tgamma(x)` using Stirling's asymptotic expansion of the logarithm of the Gamma function with Bernoulli numbers and subsequently calculates <img src="https://render.githubusercontent.com/render/math?math=1,001"> decimal digits of <img src="https://render.githubusercontent.com/render/math?math=\Gamma(n/2)"> for small integer <img src="https://render.githubusercontent.com/render/math?math=n">.
   - ![`example009_boost_math_standalone.cpp`](./examples/example009_boost_math_standalone.cpp) checks basic compatibility of standalone `decwide_t` with `Boost.Math` by testing a cube root value obtained from `boost::math::cbrt`.
   - ![`example009a_boost_math_standalone.cpp`](./examples/example009a_boost_math_standalone.cpp) also checks standalone `decwide_t` with significantly more of `Boost.Math` by testing a <img src="https://render.githubusercontent.com/render/math?math=1,001"> digit generalized Legendre function value (using `boost::math::tgamma` and more to do so).
+  - ![`example009b_boost_math_standalone.cpp`](./examples/example009b_boost_math_standalone.cpp) checks yet again standalone `decwide_t` with `Boost.Math`'s available `boost::math::tgamma` function for small-ish decimal floats having <img src="https://render.githubusercontent.com/render/math?math=\lesssim\,100"> decimal digits.
   - ![`example010_hypergeometric_2f1.cpp`](./examples/example010_hypergeometric_2f1.cpp) calculates a <img src="https://render.githubusercontent.com/render/math?math=1,001"> decimal digit hypergeometric function value using an iterative rational approximation scheme.
   - ![`example010a_hypergeometric_1f1.cpp`](./examples/example010a_hypergeometric_1f1.cpp) calculates another <img src="https://render.githubusercontent.com/render/math?math=1,001"> decimal digit hypergeometric function in a similar fashion.
   - ![`example011_trig_trapezoid_integral.cpp`](./examples/example011_trig_trapezoid_integral.cpp) uses trapezoid integration with an integral representation involving locally-written trigonometric sine and cosine functions to compute several cylindrical Bessel function values.
@@ -145,7 +158,7 @@ and
 <img src="https://render.githubusercontent.com/render/math?math=\log(2)">
 can optionally be disabled with the compiler switches:
 
-```
+```C
 #define WIDE_DECIMAL_DISABLE_IOSTREAM
 #define WIDE_DECIMAL_DISABLE_DYNAMIC_MEMORY_ALLOCATION
 #define WIDE_DECIMAL_DISABLE_CONSTRUCT_FROM_STRING
@@ -160,7 +173,7 @@ simultaneously disallows using `decwide_t` in a multithreaded application.
 So if PC-based or other kinds of multithreading are used, then dynamic memory
 allocation is needed and can not be disabled. In other words,
 
-```
+```C
 // Deactivate the disabling of dynamic memory for multithreaded PC work.
 //#define WIDE_DECIMAL_DISABLE_DYNAMIC_MEMORY_ALLOCATION
 ```
@@ -172,7 +185,7 @@ The example below calculates the square root of the decimal representation of
 the result of which is approximately
 <img src="https://render.githubusercontent.com/render/math?math=35.136306009596398663933384640418055759751518287169314528165976164717710895452890928635031219132220\ldots">.
 
-```
+```C
 #include <cstdint>
 #include <iomanip>
 #include <iostream>
@@ -214,7 +227,7 @@ In this example, note how a specialized custom allocator called
 of a certain number of temporary storages of mega-digit numbers
 (tuned to 18 in this particular example).
 
-```
+```C
 #include <iomanip>
 #include <iostream>
 
