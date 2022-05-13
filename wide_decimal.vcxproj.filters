@@ -50,6 +50,24 @@
     <Filter Include="Source Files\boost\math\bindings">
       <UniqueIdentifier>{73323c60-6a6c-4ad9-8508-42ec0b55fc21}</UniqueIdentifier>
     </Filter>
+    <Filter Include=".tidy">
+      <UniqueIdentifier>{ac826590-0eea-4ad6-95c5-4de06412c1fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include=".tidy\make">
+      <UniqueIdentifier>{0d5eb981-f809-48f3-880d-5cb3557fd7cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\util\stdcpp">
+      <UniqueIdentifier>{3e4c74ff-74d1-4bee-b6d4-b06c5c455a43}</UniqueIdentifier>
+    </Filter>
+    <Filter Include=".github\toolchains">
+      <UniqueIdentifier>{14a4c145-a484-4c81-a33d-8b4246647a39}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\multiprecision">
+      <UniqueIdentifier>{2a35e613-6cdb-49e2-b4fb-3a4522dcb770}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\boost\multiprecision\detail">
+      <UniqueIdentifier>{b9dd9544-f8a4-4034-8cb3-10c06fc8e156}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="examples\example001b_roots_almost_integer.cpp">
@@ -133,12 +151,30 @@
     <ClCompile Include="examples\example009b_boost_math_standalone.cpp">
       <Filter>Source Files\examples</Filter>
     </ClCompile>
+    <ClCompile Include="examples\example012_rational_floor_ceil.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example013_embeddable_sqrt.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="examples\example013a_embeddable_agm.cpp">
+      <Filter>Source Files\examples</Filter>
+    </ClCompile>
+    <ClCompile Include="util\stdcpp\stdcpp_patch.cpp">
+      <Filter>Source Files\util\stdcpp</Filter>
+    </ClCompile>
+    <ClCompile Include="test\coverity.c">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
+    <ClCompile Include="test\test_high_precision_log.cpp">
+      <Filter>Source Files\test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="test\independent_algebra_test_boost_cpp.h">
+    <ClInclude Include="test\independent_algebra_test_decwide_t_boost_cpp.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
-    <ClInclude Include="test\independent_algebra_test_wide_decimal.h">
+    <ClInclude Include="test\independent_algebra_test_decwide_t_wide_decimal.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
     <ClInclude Include="test\parallel_for.h">
@@ -150,19 +186,16 @@
     <ClInclude Include="test\test_decwide_t_examples.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
-    <ClInclude Include="test\independent_algebra_test.h">
+    <ClInclude Include="test\independent_algebra_test_decwide_t.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
-    <ClInclude Include="test\independent_algebra_test_base.h">
+    <ClInclude Include="test\independent_algebra_test_decwide_t_base.h">
       <Filter>Source Files\test</Filter>
     </ClInclude>
     <ClInclude Include="util\memory\util_n_slot_array_allocator.h">
       <Filter>Source Files\util\memory</Filter>
     </ClInclude>
     <ClInclude Include="util\utility\util_noncopyable.h">
-      <Filter>Source Files\util\utility</Filter>
-    </ClInclude>
-    <ClInclude Include="util\utility\util_numeric_cast.h">
       <Filter>Source Files\util\utility</Filter>
     </ClInclude>
     <ClInclude Include="util\utility\util_baselexical_cast.h">
@@ -198,8 +231,17 @@
     <ClInclude Include="math\wide_decimal\decwide_t_detail_ops.h">
       <Filter>Source Files\math\wide_decimal</Filter>
     </ClInclude>
-    <ClInclude Include="math\wide_decimal\decwide_t_examples.h">
+    <ClInclude Include="test\independent_algebra_test_decwide_t_constants.h">
+      <Filter>Source Files\test</Filter>
+    </ClInclude>
+    <ClInclude Include="math\wide_decimal\decwide_t_detail_namespace.h">
       <Filter>Source Files\math\wide_decimal</Filter>
+    </ClInclude>
+    <ClInclude Include="examples\example_decwide_t.h">
+      <Filter>Source Files\examples</Filter>
+    </ClInclude>
+    <ClInclude Include="boost\multiprecision\detail\check_cpp11_config.hpp">
+      <Filter>Source Files\boost\multiprecision\detail</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -209,5 +251,31 @@
     <None Include="README.md">
       <Filter>_doc</Filter>
     </None>
+    <None Include=".tidy\make\make_tidy_02_files.gmk">
+      <Filter>.tidy\make</Filter>
+    </None>
+    <None Include=".tidy\make\make_tidy_03_flags.gmk">
+      <Filter>.tidy\make</Filter>
+    </None>
+    <None Include=".tidy\make\make_tidy_01_generic.gmk">
+      <Filter>.tidy\make</Filter>
+    </None>
+    <None Include=".clang-tidy" />
+    <None Include=".github\toolchains\gcc.cmake">
+      <Filter>.github\toolchains</Filter>
+    </None>
+    <None Include=".github\workflows\wide_decimal_sonar.yml">
+      <Filter>.github\workflows</Filter>
+    </None>
+    <None Include="sonar-project.properties" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="examples\CMakeLists.txt">
+      <Filter>Source Files\examples</Filter>
+    </Text>
+    <Text Include="test\CMakeLists.txt">
+      <Filter>Source Files\test</Filter>
+    </Text>
+    <Text Include="CMakeLists.txt" />
   </ItemGroup>
 </Project>

@@ -1,11 +1,27 @@
-///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2021.                        //
+﻿///////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2020 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
 ///////////////////////////////////////////////////////////////////
 
 #include <cmath>
+
+#include <boost/version.hpp>
+
+#if !defined(BOOST_VERSION)
+#error BOOST_VERSION is not defined. Ensure that <boost/version.hpp> is properly included.
+#endif
+
+#if (BOOST_VERSION >= 107700)
+#if !defined(BOOST_MATH_STANDALONE)
+#define BOOST_MATH_STANDALONE
+#endif
+#endif
+
+#if ((BOOST_VERSION >= 107900) && !defined(BOOST_MP_STANDALONE))
+#define BOOST_MP_STANDALONE
+#endif
 
 #if defined(__GNUC__)
 #pragma GCC diagnostic push
@@ -14,6 +30,8 @@
 #pragma GCC diagnostic ignored "-Wsign-conversion"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wzero-as-null-pointer-constant"
 #endif
 
 #if defined(__clang__) && !defined(__APPLE__)
@@ -21,28 +39,49 @@
 #pragma GCC diagnostic ignored "-Wdeprecated-copy"
 #endif
 
-#include <boost/math/special_functions/gamma.hpp>
+#if (BOOST_VERSION < 107900)
+#include <boost/math/policies/error_handling.hpp>
+#include <boost/throw_exception.hpp>
+#endif
+
 #include <boost/math/bindings/decwide_t.hpp>
+#include <boost/math/special_functions/gamma.hpp>
 
-#include <math/wide_decimal/decwide_t_examples.h>
+#include <examples/example_decwide_t.h>
 
-namespace math { namespace wide_decimal {
+WIDE_DECIMAL_NAMESPACE_BEGIN
+
+#if(__cplusplus >= 201703L)
+namespace math::wide_decimal {
+#else
+namespace math { namespace wide_decimal { // NOLINT(modernize-concat-nested-namespaces)
+#endif
 
 namespace detail {
 
 template<typename FloatingPointType>
-FloatingPointType sin_series(const FloatingPointType& x)
+auto sin_series(const FloatingPointType& x) -> FloatingPointType
 {
-        FloatingPointType term        = x;
-  const FloatingPointType x2          = x * x;
-        FloatingPointType sum         = x;
-        bool              term_is_neg = true;
-  const FloatingPointType tol         = std::numeric_limits<FloatingPointType>::epsilon() * x;
+  using floating_point_type = FloatingPointType;
 
-  for(std::uint32_t k = 3U; k < UINT32_C(0xFFFF); k += 2U)
+        floating_point_type term        = x;
+  const floating_point_type x2          = x * x;
+        floating_point_type sum         = x;
+        bool              term_is_neg = true;
+  const floating_point_type tol         = std::numeric_limits<floating_point_type>::epsilon() * x;
+
+  for(auto k = static_cast<std::uint32_t>(UINT32_C(3));
+           k < static_cast<std::uint32_t>(UINT32_C(10000));
+           k = static_cast<std::uint32_t>(k + static_cast<std::uint32_t>(UINT8_C(2))))
   {
+    const auto k_times_k_minus_one =
+      static_cast<std::uint32_t>
+      (
+        k * static_cast<std::uint32_t>(k - static_cast<std::uint32_t>(UINT8_C(1)))
+      );
+
     term *= x2;
-    term /= std::uint32_t(k * std::uint32_t(k - 1U));
+    term /= k_times_k_minus_one;
 
     if(term < tol)
     {
@@ -58,13 +97,15 @@ FloatingPointType sin_series(const FloatingPointType& x)
 }
 
 template<typename FloatingPointType>
-FloatingPointType cos_series(const FloatingPointType& x)
+auto cos_series(const FloatingPointType& x) -> FloatingPointType
 {
-  const FloatingPointType x2          = x * x;
-        FloatingPointType term        = x2 / 2U;
-        FloatingPointType sum         = term;
+  using floating_point_type = FloatingPointType;
+
+  const floating_point_type x2          = x * x;
+        floating_point_type term        = x2 / 2U;
+        floating_point_type sum         = term;
         bool              term_is_neg = true;
-  const FloatingPointType tol         = std::numeric_limits<FloatingPointType>::epsilon() * x;
+  const floating_point_type tol         = std::numeric_limits<floating_point_type>::epsilon() * x;
 
   for(std::uint32_t k = 4U; k < UINT32_C(0xFFFF); k += 2U)
   {
@@ -84,10 +125,10 @@ FloatingPointType cos_series(const FloatingPointType& x)
   return 1U - sum;
 }
 
-}
+} // namespace detail
 
 template<typename FloatingPointType>
-FloatingPointType sin(const FloatingPointType& x)
+auto sin(const FloatingPointType& x) -> FloatingPointType // NOLINT(misc-no-recursion)
 {
   using floating_point_type = FloatingPointType;
 
@@ -110,15 +151,15 @@ FloatingPointType sin(const FloatingPointType& x)
     // | 2 | -sin(r) | -cos(r) |  sin(r)/cos(r) |
     // | 3 | -cos(r) |  sin(r) | -cos(r)/sin(r) |
 
-    const std::uint32_t      k = (std::uint32_t) (x / boost::math::constants::half_pi<floating_point_type>());
-    const std::uint_fast32_t n = (std::uint_fast32_t) (k % 4U);
+    const auto k = static_cast<std::uint32_t>     (x / boost::math::constants::half_pi<floating_point_type>());
+    const auto n = static_cast<std::uint_fast32_t>(k % 4U);
 
     floating_point_type r = x - (boost::math::constants::half_pi<floating_point_type>() * k);
 
-    const bool is_neg =  (n > 1U);
-    const bool is_cos = ((n == 1U) || (n == 3U));
+    const auto is_neg =  (n > 1U);
+    const auto is_cos = ((n == 1U) || (n == 3U));
 
-    std::uint_fast32_t n_angle_identity = 0U;
+    auto n_angle_identity = static_cast<std::uint_fast32_t>(0U);
 
     static const floating_point_type one_tenth = floating_point_type(1U) / 10U;
 
@@ -133,7 +174,7 @@ FloatingPointType sin(const FloatingPointType& x)
     s = (is_cos ? detail::cos_series(r) : detail::sin_series(r));
 
     // Rescale the result with the triple angle identity for sine.
-    for(std::uint_fast32_t t = 0U; t < n_angle_identity; ++t)
+    for(auto t = static_cast<std::uint_fast32_t>(0U); t < n_angle_identity; ++t)
     {
       s = (s * 3U) - (((s * s) * s) * 4U);
     }
@@ -154,7 +195,7 @@ FloatingPointType sin(const FloatingPointType& x)
 }
 
 template<typename FloatingPointType>
-FloatingPointType cos(const FloatingPointType& x)
+auto cos(const FloatingPointType& x) -> FloatingPointType // NOLINT(misc-no-recursion)
 {
   using floating_point_type = FloatingPointType;
 
@@ -177,15 +218,15 @@ FloatingPointType cos(const FloatingPointType& x)
     // | 2 | -sin(r) | -cos(r) |  sin(r)/cos(r) |
     // | 3 | -cos(r) |  sin(r) | -cos(r)/sin(r) |
 
-    const std::uint32_t      k = (std::uint32_t) (x / boost::math::constants::half_pi<floating_point_type>());
-    const std::uint_fast32_t n = (std::uint_fast32_t) (k % 4U);
+    const auto k = static_cast<std::uint32_t>     (x / boost::math::constants::half_pi<floating_point_type>());
+    const auto n = static_cast<std::uint_fast32_t>(k % 4U);
 
     floating_point_type r = x - (boost::math::constants::half_pi<floating_point_type>() * k);
 
-    const bool is_neg = ((n == 1U) || (n == 2U));
-    const bool is_sin = ((n == 1U) || (n == 3U));
+    const auto is_neg = ((n == 1U) || (n == 2U));
+    const auto is_sin = ((n == 1U) || (n == 3U));
 
-    std::uint_fast32_t n_angle_identity = 0U;
+    auto n_angle_identity = static_cast<std::uint_fast32_t>(0U);
 
     static const floating_point_type one_tenth = floating_point_type(1U) / 10U;
 
@@ -200,7 +241,7 @@ FloatingPointType cos(const FloatingPointType& x)
     c = (is_sin ? detail::sin_series(r) : detail::cos_series(r));
 
     // Rescale the result with the triple angle identity for cosine.
-    for(std::uint_fast32_t t = 0U; t < n_angle_identity; ++t)
+    for(auto t = static_cast<std::uint_fast32_t>(0U); t < n_angle_identity; ++t)
     {
       c = (((c * c) * c) * 4U) - (c * 3U);
     }
@@ -220,12 +261,19 @@ FloatingPointType cos(const FloatingPointType& x)
   return c;
 }
 
-} }
+#if(__cplusplus >= 201703L)
+} // namespace math::wide_decimal
+#else
+} // namespace wide_decimal
+} // namespace math
+#endif
 
-namespace local
+WIDE_DECIMAL_NAMESPACE_END
+
+namespace example009b_boost
 {
   template<class T>
-  bool test_tgamma()
+  auto test_tgamma() -> bool
   {
      // N[Gamma[5/2], 120]
      const T control_tgamma_2_and_half("1.32934038817913702047362561250585888709816209209179034616035584238968346344327413603121299255390849906217011771821192800");
@@ -239,41 +287,83 @@ namespace local
      const T closeness_2_and_half = fabs(1 - fabs(tgamma_2_and_half / control_tgamma_2_and_half));
      const T closeness_2_fifty    = fabs(1 - fabs(tgamma_2_fifty    / control_tgamma_2_fifty));
 
-     const bool result_is_ok_2_and_half = (closeness_2_and_half < std::numeric_limits<T>::epsilon() * T(1.0E5L));
-     const bool result_is_ok_2_fifty    = (closeness_2_fifty    < std::numeric_limits<T>::epsilon() * T(1.0E5L));
+     const auto result_is_ok_2_and_half = (closeness_2_and_half < std::numeric_limits<T>::epsilon() * T(1.0E5L));
+     const auto result_is_ok_2_fifty    = (closeness_2_fifty    < std::numeric_limits<T>::epsilon() * T(1.0E5L));
 
-     const bool result_is_ok = (result_is_ok_2_and_half && result_is_ok_2_fifty);
+     const auto result_is_ok = (result_is_ok_2_and_half && result_is_ok_2_fifty);
 
      return result_is_ok;
   }
-}
+} // namespace example009b_boost
 
-bool math::wide_decimal::example009b_boost_math_standalone()
+#if defined(WIDE_DECIMAL_NAMESPACE)
+auto WIDE_DECIMAL_NAMESPACE::math::wide_decimal::example009b_boost_math_standalone() -> bool
+#else
+auto math::wide_decimal::example009b_boost_math_standalone() -> bool
+#endif
 {
-  using wide_decimal_010_type = math::wide_decimal::decwide_t< 10U, std::uint32_t, void>;
-  using wide_decimal_035_type = math::wide_decimal::decwide_t< 35U, std::uint32_t, void>;
-  using wide_decimal_105_type = math::wide_decimal::decwide_t<105U, std::uint32_t, void>;
+  using wide_decimal_010_type = math::wide_decimal::decwide_t<static_cast<std::int32_t>(INT32_C( 10)), std::uint32_t, void>;
+  using wide_decimal_035_type = math::wide_decimal::decwide_t<static_cast<std::int32_t>(INT32_C( 35)), std::uint32_t, void>;
+  using wide_decimal_105_type = math::wide_decimal::decwide_t<static_cast<std::int32_t>(INT32_C(105)), std::uint32_t, void>;
 
-  const bool result_010_is_ok = local::test_tgamma<wide_decimal_010_type>();
-  const bool result_035_is_ok = local::test_tgamma<wide_decimal_035_type>();
-  const bool result_105_is_ok = local::test_tgamma<wide_decimal_105_type>();
+  #if (BOOST_VERSION < 107900)
+  using boost_wrapexcept_round_type  = ::boost::wrapexcept<::boost::math::rounding_error>;
+  using boost_wrapexcept_domain_type = ::boost::wrapexcept<std::domain_error>;
+  #endif
 
-  const bool result_is_ok = (   result_010_is_ok
-                             && result_035_is_ok
-                             && result_105_is_ok);
+  auto result_is_ok = false;
+
+  try
+  {
+  const auto result_010_is_ok = example009b_boost::test_tgamma<wide_decimal_010_type>();
+  const auto result_035_is_ok = example009b_boost::test_tgamma<wide_decimal_035_type>();
+  const auto result_105_is_ok = example009b_boost::test_tgamma<wide_decimal_105_type>();
+
+  result_is_ok = (   result_010_is_ok
+                  && result_035_is_ok
+                  && result_105_is_ok);
+  }
+  #if (BOOST_VERSION < 107900)
+  catch(const boost_wrapexcept_round_type& e)
+  {
+    result_is_ok = false;
+
+    std::cout << "Exception: boost_wrapexcept_round_type: " << e.what() << std::endl;
+  }
+  catch(const boost_wrapexcept_domain_type& e)
+  {
+    result_is_ok = false;
+
+    std::cout << "Exception: boost_wrapexcept_domain_type: " << e.what() << std::endl;
+  }
+  #else
+  catch(const ::boost::math::rounding_error& e)
+  {
+    result_is_ok = false;
+
+    std::cout << "Exception: ::boost::math::rounding_error: " << e.what() << std::endl;
+  }
+  catch(const std::domain_error& e)
+  {
+    result_is_ok = false;
+
+    std::cout << "Exception: std::domain_error: " << e.what() << std::endl;
+  }
+  #endif
 
   return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_DECIMAL_STANDALONE_EXAMPLE009B_BOOST_MATH_STANDALONE)
 
 #include <iomanip>
 #include <iostream>
 
-int main()
+// TBD: Handle exception catching in example009b_boost_math_standalone at a later time.
+auto main() -> int // NOLINT(bugprone-exception-escape)
 {
-  const bool result_is_ok = math::wide_decimal::example009b_boost_math_standalone();
+  const auto result_is_ok = math::wide_decimal::example009b_boost_math_standalone();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
@@ -285,6 +375,7 @@ int main()
 #endif
 
 #if defined(__GNUC__)
+#pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
 #pragma GCC diagnostic pop
