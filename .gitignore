@@ -2,3 +2,6 @@ wide-decimal-release-x64/
 .vs/
 wide-decimal-debug-x64/
 wide_decimal.vcxproj.user
+wide-decimal-debug-x86/
+wide-decimal-release-x86/
+wide_decimal_vs2022.vcxproj.user

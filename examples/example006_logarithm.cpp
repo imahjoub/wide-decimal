@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020 - 2021.                 //
+//  Copyright Christopher Kormanyos 2020 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -7,15 +7,19 @@
 
 #include <cstdint>
 
+#include <examples/example_decwide_t.h>
 #include <math/wide_decimal/decwide_t.h>
-#include <math/wide_decimal/decwide_t_examples.h>
 
-bool math::wide_decimal::example006_logarithm()
+#if defined(WIDE_DECIMAL_NAMESPACE)
+auto WIDE_DECIMAL_NAMESPACE::math::wide_decimal::example006_logarithm() -> bool
+#else
+auto math::wide_decimal::example006_logarithm() -> bool
+#endif
 {
   // Compute 1,000 values of Log[(123456789/1000000) * (3^n)],
   // the result of which is Log[(123456789/1000000)] + (n Log[3])
 
-  using dec1001_t = math::wide_decimal::decwide_t<1001U>;
+  using dec1001_t = math::wide_decimal::decwide_t<static_cast<std::int32_t>(INT32_C(1001))>;
 
   const dec1001_t control_base
   {
@@ -36,13 +40,13 @@ bool math::wide_decimal::example006_logarithm()
   dec1001_t x = dec1001_t(UINT32_C(123456789)) / UINT32_C(1000000);
 
   const dec1001_t ln3 = log(dec1001_t(3U));
-  const dec1001_t tol = dec1001_t(std::numeric_limits<dec1001_t>::epsilon() * 10);
+  const auto      tol = dec1001_t(std::numeric_limits<dec1001_t>::epsilon() * static_cast<std::uint32_t>(UINT8_C(10)));
 
   bool result_is_ok = true;
 
-  const std::clock_t start = std::clock();
+  const auto start = std::clock();
 
-  for(unsigned i = 0U; i < 1000U; ++i)
+  for(auto i = static_cast<unsigned>(0U); i < static_cast<unsigned>(UINT32_C(1000)); ++i)
   {
     const dec1001_t lg = log(x);
 
@@ -55,24 +59,24 @@ bool math::wide_decimal::example006_logarithm()
     x *= 3U;
   }
 
-  const std::clock_t stop = std::clock();
+  const auto stop = std::clock();
 
   std::cout << "Time example006_logarithm(): "
-            << (float) (stop - start) / (float) CLOCKS_PER_SEC
+            << static_cast<float>(stop - start) / static_cast<float>(CLOCKS_PER_SEC)
             << std::endl;
 
   return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_DECIMAL_STANDALONE_EXAMPLE006_LOGARITHM)
 
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
-  const bool result_is_ok = math::wide_decimal::example006_logarithm();
+  const auto result_is_ok = math::wide_decimal::example006_logarithm();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

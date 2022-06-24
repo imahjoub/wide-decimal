@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020 - 2021.                 //
+//  Copyright Christopher Kormanyos 2020 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -9,13 +9,16 @@
 #include <cstdint>
 #include <deque>
 
+#include <examples/example_decwide_t.h>
 #include <math/wide_decimal/decwide_t.h>
-#include <math/wide_decimal/decwide_t_examples.h>
 
-namespace local
+namespace local_polylog
 {
   template<typename FloatingPointType>
-  FloatingPointType polylog(const std::int32_t s, const FloatingPointType& x)
+  auto polylog(std::int32_t s, const FloatingPointType& x) -> FloatingPointType;
+
+  template<typename FloatingPointType>
+  auto polylog(std::int32_t s, const FloatingPointType& x) -> FloatingPointType
   {
     using floating_point_type = FloatingPointType;
 
@@ -24,7 +27,9 @@ namespace local
     floating_point_type x_pow_k(x);
     floating_point_type sum    (x);
 
-    for(std::uint_fast32_t k = UINT32_C(2); k < UINT32_C(100000); ++k)
+    for(auto   k = static_cast<std::uint_fast32_t>(UINT32_C(2));
+               k < static_cast<std::uint_fast32_t>(UINT32_C(100000));
+             ++k)
     {
       x_pow_k *= x;
 
@@ -41,15 +46,19 @@ namespace local
 
     return sum;
   }
-}
+} // namespace local_polylog
 
-bool math::wide_decimal::example005_polylog_series()
+#if defined(WIDE_DECIMAL_NAMESPACE)
+auto WIDE_DECIMAL_NAMESPACE::math::wide_decimal::example005_polylog_series() -> bool
+#else
+auto math::wide_decimal::example005_polylog_series() -> bool
+#endif
 {
-  using dec101_t = math::wide_decimal::decwide_t<101U>;
+  using dec101_t = math::wide_decimal::decwide_t<static_cast<std::int32_t>(INT32_C(101))>;
 
   using std::fabs;
 
-  const dec101_t poly = local::polylog(7U, dec101_t(17U) / 71U);
+  const dec101_t poly = local_polylog::polylog(7U, dec101_t(17U) / 71U);
 
   // N[PolyLog[7, 17/71], 101]
   const dec101_t control
@@ -60,20 +69,20 @@ bool math::wide_decimal::example005_polylog_series()
   // Check the closeness of the result.
   const dec101_t closeness = fabs(1 - (poly / control));
 
-  const bool result_is_ok = (closeness < (std::numeric_limits<dec101_t>::epsilon() * 10));
+  const auto result_is_ok = (closeness < (std::numeric_limits<dec101_t>::epsilon() * static_cast<std::uint32_t>(UINT8_C(10))));
 
   return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_DECIMAL_STANDALONE_EXAMPLE005_POLYLOG_SERIES)
 
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
-  const bool result_is_ok = math::wide_decimal::example005_polylog_series();
+  const auto result_is_ok = math::wide_decimal::example005_polylog_series();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2018 - 2021.                 //
+//  Copyright Christopher Kormanyos 2018 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -10,13 +10,13 @@
 #include <cstdint>
 #include <numeric>
 
+#include <examples/example_decwide_t.h>
 #include <math/wide_decimal/decwide_t.h>
-#include <math/wide_decimal/decwide_t_examples.h>
 
-namespace local
+namespace example010a_hypergeometric
 {
   template<typename T>
-  T hypergeometric_1f1(const T& AP, const T& CP, const T& ZM)
+  auto hypergeometric_1f1(const T& AP, const T& CP, const T& ZM) -> T // NOLINT(readability-identifier-naming,bugprone-easily-swappable-parameters)
   {
     // Implement a rational approximation of hypergeometric_1f1.
     // This C++11 code uses a computational scheme similar to
@@ -27,7 +27,7 @@ namespace local
     // in order to repair one or two type-setting errors in the
     // original publication.
 
-    // Luke's original Fortran77 and algorithmic work are fascinating
+    // Luke's original Fortran77 programs and algorithmic work are fascinating
     // since they are generic and scalable --- decades ahead of their time.
     // Here, in fact, the calculation is scaled to 1,001 decimal digits
     // of precision.
@@ -35,52 +35,54 @@ namespace local
     // Retain some stylistic elements and comments from Luke's
     // original Fortran77 coding style.
 
-    const T Z(-ZM);
+    const T Z(-ZM); // NOLINT(readability-identifier-naming)
 
     // C
     // C INITIALIZATION :
     // C
 
-    const T Z2(Z / 2U);
+    const T Z2(Z / 2U); // NOLINT(readability-identifier-naming)
 
     const T my_zero(0U);
     const T my_one (1U);
     const T my_two (2U);
 
-    std::array<T, 4U> A;
-    std::array<T, 4U> B;
+    std::array<T, 4U> A; // NOLINT(readability-identifier-naming)
+    std::array<T, 4U> B; // NOLINT(readability-identifier-naming)
 
     {
-      const T CT1X((AP * Z) / CP);
-      const T CT2X(Z2 / (1U + CP));
+      const T CT1X((AP * Z) / CP);  // NOLINT(readability-identifier-naming)
+      const T CT2X(Z2 / (1U + CP)); // NOLINT(readability-identifier-naming)
 
       A[0U] = my_one;
       B[0U] = my_one;
-      B[1U] = my_one + (((1U + AP) * Z2) / CP);
+      B[1U] = my_one +  (((1U + AP) * Z2)  / CP);
       A[1U] = B[1U] - CT1X;
-      B[2U] = my_one + (((((my_two + B[1U]) * (2U + AP))) * CT2X) / 3U);
-      A[2U] = B[2U] - ((my_one + CT2X) * CT1X);
+      B[2U] = my_one + ((((my_two + B[1U]) * (2U + AP)) * CT2X) / 3U);
+      A[2U] = B[2U]  -   ((my_one + CT2X)  * CT1X);
     }
 
-    std::uint_fast16_t CT1 = UINT16_C(3);
-    T CT2;
+    std::uint_fast16_t CT1 = UINT16_C(3); // NOLINT(readability-identifier-naming)
+    T CT2;                                // NOLINT(readability-identifier-naming)
 
-    std::array<std::uint_fast16_t, 4U> N =
-    {{
-      UINT16_C(3),
-      UINT16_C(2),
-      UINT16_C(1),
-      UINT16_C(0)
-    }};
+    std::array<std::uint_fast16_t, 4U> N // NOLINT(readability-identifier-naming)
+    {
+      {
+        UINT16_C(3),
+        UINT16_C(2),
+        UINT16_C(1),
+        UINT16_C(0)
+      }
+    };
 
-    std::array<T, 3U> G;
+    std::array<T, 3U> G; // NOLINT(readability-identifier-naming)
 
     // C
     // C FOR I=3,...,N , THE VALUES A(I) AND B(I) ARE CALCULATED
     // C USING THE RECURRENCE RELATIONS BELOW.
     // C
 
-    const T Z2Z2 = (Z2 * Z2);
+    const T Z2Z2 = (Z2 * Z2); // NOLINT(readability-identifier-naming)
 
     for( ; N[0U] < UINT16_C(10000); ++N[0U])
     {
@@ -100,7 +102,7 @@ namespace local
       G[0U] = my_one + (CT2 * (N[2U] - AP));
       CT2   =  (CT2 *  (AP + N[1U])) / (CP + N[2U]);
       G[1U] =   CT2 * ((CP - N[1U]) + (((AP + N[0U]) / (CT1 + 2U)) * Z2));
-      G[2U] = ((CT2 *  (AP - N[2U])) * ((AP + N[2U]) * (Z2Z2))) / (std::uint32_t(std::uint32_t(CT1 - my_two) * CT1) * (CP + N[3U]));
+      G[2U] = ((CT2 *  (AP - N[2U])) * ((AP + N[2U]) *  Z2Z2)) / (std::uint32_t(std::uint32_t(CT1 - my_two) * CT1) * (CP + N[3U]));
 
       // C -----------------------------------------------------------------
       // C THE RECURRENCE RELATIONS FOR A(I) and B(I) ARE AS FOLLOWS
@@ -151,17 +153,21 @@ namespace local
     // by the ratio of the final recursions of A and B.
     return ((N[0U] < UINT16_C(10000)) ? (A.back() / B.back()) : T(0U));
   }
-}
+} // namespace example010a_hypergeometric
 
-bool math::wide_decimal::example010a_hypergeometric_1f1()
+#if defined(WIDE_DECIMAL_NAMESPACE)
+auto WIDE_DECIMAL_NAMESPACE::math::wide_decimal::example010a_hypergeometric_1f1() -> bool
+#else
+auto math::wide_decimal::example010a_hypergeometric_1f1() -> bool
+#endif
 {
-  using dec1001_t = math::wide_decimal::decwide_t<1001U>;
+  using dec1001_t = math::wide_decimal::decwide_t<static_cast<std::int32_t>(INT32_C(1001))>;
 
   const dec1001_t a( dec1001_t(2U) / 3U);
   const dec1001_t b( dec1001_t(4U) / 3U);
   const dec1001_t z(-dec1001_t(3U) / 4U);
 
-  const dec1001_t h1f1 = local::hypergeometric_1f1(a, b, z);
+  const dec1001_t h1f1 = example010a_hypergeometric::hypergeometric_1f1(a, b, z);
 
   // N[Hypergeometric1F1[2/3, 4/3, -3/4], 1003]
   const dec1001_t control
@@ -184,20 +190,20 @@ bool math::wide_decimal::example010a_hypergeometric_1f1()
 
   const dec1001_t closeness = fabs(1 - (h1f1 / control));
 
-  const bool result_is_ok = closeness < (std::numeric_limits<dec1001_t>::epsilon() * 10);
+  const auto result_is_ok = (closeness < (std::numeric_limits<dec1001_t>::epsilon() * static_cast<std::uint32_t>(UINT8_C(10))));
 
   return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_DECIMAL_STANDALONE_EXAMPLE010A_HYPERGEOMETRIC_1F1)
 
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
-  const bool result_is_ok = math::wide_decimal::example010a_hypergeometric_1f1();
+  const auto result_is_ok = math::wide_decimal::example010a_hypergeometric_1f1();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

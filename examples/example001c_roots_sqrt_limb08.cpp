@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020 - 2021.                 //
+//  Copyright Christopher Kormanyos 2020 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -7,20 +7,24 @@
 
 #include <cstdint>
 
+#include <examples/example_decwide_t.h>
 #include <math/wide_decimal/decwide_t.h>
-#include <math/wide_decimal/decwide_t_examples.h>
 #include <util/memory/util_n_slot_array_allocator.h>
 
-bool math::wide_decimal::example001c_roots_sqrt_limb08()
+#if defined(WIDE_DECIMAL_NAMESPACE)
+auto WIDE_DECIMAL_NAMESPACE::math::wide_decimal::example001c_roots_sqrt_limb08() -> bool
+#else
+auto math::wide_decimal::example001c_roots_sqrt_limb08() -> bool
+#endif
 {
   using local_limb_type = std::uint8_t;
 
-  constexpr std::uint32_t wide_decimal_digits10 = UINT32_C(1001);
+  constexpr std::int32_t wide_decimal_digits10 = INT32_C(1001);
 
   constexpr std::int32_t local_elem_number =
     math::wide_decimal::detail::decwide_t_helper<wide_decimal_digits10, local_limb_type>::elem_number;
 
-  using local_allocator_type = util::n_slot_array_allocator<void, local_elem_number, 16U>;
+  using local_allocator_type = util::n_slot_array_allocator<void, local_elem_number, 16U>; // NOLINT(cppcoreguidelines-avoid-magic-numbers,readability-magic-numbers)
 
   using dec101_t = math::wide_decimal::decwide_t<wide_decimal_digits10,
                                                  local_limb_type,
@@ -49,20 +53,20 @@ bool math::wide_decimal::example001c_roots_sqrt_limb08()
 
   const dec101_t closeness = fabs(1 - fabs(s / control));
 
-  const bool result_is_ok = closeness < (std::numeric_limits<dec101_t>::epsilon() * 10);
+  const auto result_is_ok = (closeness < (std::numeric_limits<dec101_t>::epsilon() * static_cast<std::uint32_t>(UINT8_C(10))));
 
   return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_DECIMAL_STANDALONE_EXAMPLE001C_ROOTS_SQRT_LIMB08)
 
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
-  const bool result_is_ok = math::wide_decimal::example001c_roots_sqrt_limb08();
+  const auto result_is_ok = math::wide_decimal::example001c_roots_sqrt_limb08();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }

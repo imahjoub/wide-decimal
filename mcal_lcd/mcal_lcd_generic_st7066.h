@@ -1,5 +1,12 @@
-#ifndef MCAL_LCD_GENERIC_ST7066_2020_05_07_H_
-  #define MCAL_LCD_GENERIC_ST7066_2020_05_07_H_
+///////////////////////////////////////////////////////////////////////////////
+//  Copyright Christopher Kormanyos 2020 - 2022.
+//  Distributed under the Boost Software License,
+//  Version 1.0. (See accompanying file LICENSE_1_0.txt
+//  or copy at http://www.boost.org/LICENSE_1_0.txt)
+//
+
+#ifndef MCAL_LCD_GENERIC_ST7066_2020_05_07_H // NOLINT(llvm-header-guard)
+  #define MCAL_LCD_GENERIC_ST7066_2020_05_07_H
 
   #include <algorithm>
   #include <cstdint>
@@ -10,7 +17,11 @@
 
   #include <util/utility/util_time.h>
 
-  namespace mcal { namespace lcd {
+  #if(__cplusplus >= 201703L)
+  namespace mcal::lcd {
+  #else
+  namespace mcal { namespace lcd { // NOLINT(modernize-concat-nested-namespaces)
+  #endif
 
   template<typename port_pin_rs__type,
            typename port_pin_rw__type,
@@ -67,16 +78,16 @@
       command(UINT8_C(0x0C));                           // Display ON; Cursor ON
       command(UINT8_C(0x06));                           // Entry mode set
 
-      const bool write_clear_lines_is_ok = (   write_n(nullptr, 0U, 0U)
+      const auto write_clear_lines_is_ok = (   write_n(nullptr, 0U, 0U)
                                             && write_n(nullptr, 0U, 1U));
 
 
       return write_clear_lines_is_ok;
     }
 
-    virtual bool write_n(const char* pstr,
-                         const std::uint_fast8_t length,
-                         const std::uint_fast8_t line_index)
+    virtual bool write_n(const char*             pstr,
+                               std::uint_fast8_t length,
+                               std::uint_fast8_t line_index)
     {
       std::uint_fast8_t char_index = 0U;
 
@@ -146,6 +157,11 @@
     }
   };
 
-  } } // namespace mcal::lcd
+  #if(__cplusplus >= 201703L)
+  } // namespace mcal::lcd
+  #else
+  } // namespace lcd
+  } // namespace mcal
+  #endif
 
-#endif // MCAL_LCD_GENERIC_ST7066_2020_05_07_H_
+#endif // MCAL_LCD_GENERIC_ST7066_2020_05_07_H

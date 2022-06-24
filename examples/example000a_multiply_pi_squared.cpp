@@ -1,5 +1,5 @@
 ///////////////////////////////////////////////////////////////////
-//  Copyright Christopher Kormanyos 2020 - 2021.                 //
+//  Copyright Christopher Kormanyos 2020 - 2022.                 //
 //  Distributed under the Boost Software License,                //
 //  Version 1.0. (See accompanying file LICENSE_1_0.txt          //
 //  or copy at http://www.boost.org/LICENSE_1_0.txt)             //
@@ -7,12 +7,16 @@
 
 #include <cstdint>
 
+#include <examples/example_decwide_t.h>
 #include <math/wide_decimal/decwide_t.h>
-#include <math/wide_decimal/decwide_t_examples.h>
 
-bool math::wide_decimal::example000a_multiply_pi_squared()
+#if defined(WIDE_DECIMAL_NAMESPACE)
+auto WIDE_DECIMAL_NAMESPACE::math::wide_decimal::example000a_multiply_pi_squared() -> bool
+#else
+auto math::wide_decimal::example000a_multiply_pi_squared() -> bool
+#endif
 {
-  constexpr std::uint32_t wide_decimal_digits10 = UINT32_C(1001);
+  constexpr std::int32_t wide_decimal_digits10 = INT32_C(1001);
 
   using float_type = math::wide_decimal::decwide_t<wide_decimal_digits10>;
 
@@ -54,20 +58,20 @@ bool math::wide_decimal::example000a_multiply_pi_squared()
 
   const float_type closeness = fabs(1 - ratio);
 
-  const bool result_is_ok = closeness < (std::numeric_limits<float_type>::epsilon() * 10);
+  const auto result_is_ok = closeness < (std::numeric_limits<float_type>::epsilon() * static_cast<std::uint32_t>(UINT8_C(10)));
 
   return result_is_ok;
 }
 
 // Enable this if you would like to activate this main() as a standalone example.
-#if 0
+#if defined(WIDE_DECIMAL_STANDALONE_EXAMPLE000A_MULTIPLY_PI_SQUARED)
 
 #include <iomanip>
 #include <iostream>
 
-int main()
+auto main() -> int
 {
-  const bool result_is_ok = math::wide_decimal::example000a_multiply_pi_squared();
+  const auto result_is_ok = math::wide_decimal::example000a_multiply_pi_squared();
 
   std::cout << "result_is_ok: " << std::boolalpha << result_is_ok << std::endl;
 }
